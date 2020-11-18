@@ -2,6 +2,8 @@
 Torrent Tracker Sorter.ps1
 Copyright (C) 2020  MantisTree
 
+Sort .TORRENT files into subdirectories named after the tracker indicated in the file
+
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
