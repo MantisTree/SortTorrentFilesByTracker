@@ -1,4 +1,4 @@
-﻿<#
+<#
 Torrent Tracker Sorter.ps1
 Copyright (C) 2020  MantisTree
 
@@ -23,8 +23,12 @@ $allfiles  = $allfiles | Sort-Object $ToNatural
 
 Foreach($ThisFileObject in $allfiles){
 
+    $TrackerName = "(DHT)"
+
     $ThisFilePath = $ThisFileObject.FullName
     $ThisFileName = $ThisFileObject.Name
+
+    Write-Host "Working $ThisFileName" -ForegroundColor Blue
 
     $ThisFilePath = $ThisFilePath.Replace("[","``[").Replace("]","``]")
 
@@ -34,23 +38,25 @@ Foreach($ThisFileObject in $allfiles){
 
     $target = ($FileContents | Where-Object {$_.Contains($searchstring)})
 
-    $trackerindex = $target.indexof($searchstring)+$searchstring.Length
+    If($target){
+        $trackerindex = $target.indexof($searchstring)+$searchstring.Length
 
-    $trackerlen = $target.Substring($trackerindex,4).split(":")[0]
+        $trackerlen = $target.Substring($trackerindex,4).split(":")[0]
 
-    $indexofcolon = $target.Substring($trackerindex,4).indexof(":")
+        $indexofcolon = $target.Substring($trackerindex,4).indexof(":")
 
-    $trackerStart = $trackerindex + $indexofcolon +1
+        $trackerStart = $trackerindex + $indexofcolon +1
 
-    $tracker = $target.Substring($trackerStart,$trackerlen)
+        $tracker = $target.Substring($trackerStart,$trackerlen)
 
-    $Escapedtracker = $tracker.Replace("""","'")
+        $Escapedtracker = $tracker.Replace("""","'")
 
-    $TrackerName = $Escapedtracker.split("/")[2].split(":")[0]
+        $TrackerName = $Escapedtracker.split("/")[2].split(":")[0]
     
-    $TrackerPartCount = $TrackerName.split(".").count
+        $TrackerPartCount = $TrackerName.split(".").count
     
-    If($TrackerPartCount -gt 2){$TrackerName = ($TrackerName.split(".") | select -Last ($TrackerPartCount -1)) -join(".")}
+        If($TrackerPartCount -gt 2){$TrackerName = ($TrackerName.split(".") | select -Last ($TrackerPartCount -1)) -join(".")}
+    }
 
     Write-host "$($ThisFileName)'s tracker is '" -NoNewline
     Write-Host "$TrackerName" -NoNewline -ForegroundColor Yellow
@@ -61,7 +67,8 @@ Foreach($ThisFileObject in $allfiles){
     }
     else
     {
-        mkdir $TrackerName
+        mkdir $TrackerName | Out-Null
         mv $ThisFilePath $TrackerName
     }
+
 }
